@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="utf-8">
+        <title>Fortuneo</title>
+        <script type="text/javascript" src="../d3/d3.js"></script>
+    </head>
+    <body>
+        <script type="text/javascript">
+
+// defintion du canvas
+var w=500;
+var h=300;
+var barPadding=1;
+
+
+var svg = d3.select("body")
+.append("svg")
+.attr("width", w)
+.attr("height", h);
+
+
+// initialisation du dataset
+d3.csv("result.csv", function(_data) {
+    data = _data.map(function(course)
+        {
+            console.log(course.nb_coureurs);
+        })
+})
+
+       </script>
+    </body>
+</html>

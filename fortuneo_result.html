@@ -22,12 +22,11 @@ var svg = d3.select("body")
 
 // initialisation du dataset
 d3.csv("result.csv", function(dataset) {
-    dataset.forEach(function(course) {
-        course.nb_coureurs = +course.nb_coureurs;
-    })
-    console.log(dataset[0])
+  dataset.forEach(function(course) {
+    course.nbcoureurs = +course.nbcoureurs;
+  })
 
-    // elements rect
+  // elements rect
   var elts = svg.selectAll("rect")
   .data(dataset)
   .enter();
@@ -35,42 +34,45 @@ d3.csv("result.csv", function(dataset) {
   //bar par epreuve
   elts.append("rect")
   .attr("x", function(d, i) {
-      return i * (w / dataset.length);
+    return i * (w / dataset.length);
   })
   .attr("y", function(d,i) {
-      return h-dataset[i].nb_coureurs;
+      return h-dataset[i].nbcoureurs;
   })
   .attr("width", w / dataset.length -1)
   .attr("height", function(d, i) {
-      return dataset[i].nb_coureurs;
+      return dataset[i].nbcoureurs;
   })
   .attr("fill", function(d) {
     return "rgb(190, 190, 190)";
-  });
+  })
 
-    var coureurs = d3.keys(dataset[0])
-    for (var j = 2; j <= coureurs.length-1; j++) {
-        var coureur = coureurs[j]
-        console.log(coureur)
+  // foreach coureur
+  d3.keys(dataset[1]).forEach(function(key,index) {
+    console.log(key)
 
-        //bar par coureur
+    if (index >= 2) {
+     //bar par coureur
       elts.append("rect")
       .attr("x", function(d, i) {
-          return i * (w / dataset.length);
+        return i * (w / dataset.length);
       })
       .attr("y", function(d,i) {
-            console.log(dataset[i].VACHON)
-          return h-dataset[i].VACHON;
+
+        return h-dataset[i][key];
       })
       .attr("width", w / dataset.length -1)
       .attr("height", function(d) {
-          return 1;
+        return 1;
       })
       .attr("fill", function(d) {
         return "rgb(20, 150, 20)";
-      });
-    };
+      })
 
+    }
+  })
+  
+ 
 })
 
        </script>

@@ -12,8 +12,9 @@
 var w=500
 var h=300
 var barPadding=1
-var barSpace = 2
+var barSpace = 4
 var bottomSpace = 20
+var heightFactor = 2
 
 var svg = d3.select("body")
 .append("svg")
@@ -22,7 +23,7 @@ var svg = d3.select("body")
 
 
 // initialisation du dataset
-d3.csv("result.csv", function(dataset) {
+d3.csv("result-fort.csv", function(dataset) {
   dataset.forEach(function(course) {
     course.nbcoureurs = + course.nbcoureurs;
   })
@@ -38,11 +39,11 @@ d3.csv("result.csv", function(dataset) {
     return i * (w / dataset.length);
   })
   .attr("y", function(d,i) {
-      return h-dataset[i].nbcoureurs;
+      return h-(dataset[i].nbcoureurs*heightFactor);
   })
-  .attr("width", w / dataset.length -barSpace)
+  .attr("width", w / dataset.length-barSpace)
   .attr("height", function(d, i) {
-      return dataset[i].nbcoureurs;
+      return dataset[i].nbcoureurs*heightFactor
   })
   .attr("fill", function(d) {
     return "rgb(190, 190, 190)";
@@ -54,7 +55,7 @@ d3.csv("result.csv", function(dataset) {
   .enter()
   .append("text")
   .text(function(d,i) {
-    return fitParagraph(12,dataset[i].epreuve);
+    return fitParagraph(17,dataset[i].epreuve);
   })
   .attr("x", function(d, i) {
         return i * (w / dataset.length) + (w / dataset.length - barPadding) / 2;
@@ -82,18 +83,17 @@ d3.csv("result.csv", function(dataset) {
         else return "hidden"
       })
       .attr("x", function(d, i) {
-        return i * (w / dataset.length);
+        return i * (w / dataset.length)
       })
       .attr("y", function(d,i) {
-
-        return h-dataset[i][key];
+        return h-(dataset[i][key]*heightFactor)
       })
       .attr("width", w / dataset.length -barSpace)
       .attr("height", function(d) {
-        return 1;
+        return 1 * heightFactor
       })
       .attr("fill", function(d) {
-        return "rgb(20, 150, 20)";
+        return "rgb(20, 150, 20)"
       })
 
     }

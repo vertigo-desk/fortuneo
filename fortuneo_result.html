@@ -49,32 +49,10 @@ d3.csv("result-fort.csv", function(dataset) {
     return "rgb(190, 190, 190)";
   })
 
-  //nom epreuve
-  svg.selectAll("text")
-  .data(dataset)
-  .enter()
-  .append("text")
-  .text(function(d,i) {
-    return fitParagraph(17,dataset[i].epreuve);
-  })
-  .attr("x", function(d, i) {
-        return i * (w / dataset.length) + (w / dataset.length - barPadding) / 2;
-    })
-  .attr("y", function(d,i) {
-        return h+bottomSpace-2;
-   })
-   .attr("font-family", "sans-serif")
-   .attr("font-size", "11px")
-   .attr("fill", "grey")
-   .attr("text-anchor", "middle")
-
-
   // foreach coureur
   d3.keys(dataset[1]).forEach(function(key,index) {
-    console.log(key)
 
     if (index >= 2) {
-
      //bar par coureur
       elts.append("rect")
       .attr("visibility", function(d, i) {
@@ -95,11 +73,48 @@ d3.csv("result-fort.csv", function(dataset) {
       .attr("fill", function(d) {
         return "rgb(20, 150, 20)"
       })
-
     }
   })
+
+  // elts text
+  var text = svg.selectAll("text")
+  .data(dataset)
+  .enter()
+
+  //nom epreuve
+  text.append("text")
+  .text(function(d,i) {
+    return fitParagraph(17,dataset[i].epreuve);
+  })
+  .attr("x", function(d, i) {
+    return i * (w / dataset.length) + (w / dataset.length - barPadding) / 2;
+  })
+  .attr("y", function(d,i) {
+    return h+bottomSpace-2;
+  })
+  .attr("font-family", "sans-serif")
+  .attr("font-size", "11px")
+  .attr("fill", "grey")
+  .attr("text-anchor", "middle")
+
+ //nombre coureurs
+  text.append("text")
+  .text(function(d,i) {
+    console.log(dataset[i].nbcoureurs)
+    return dataset[i].nbcoureurs
+  })
+  .attr("x", function(d, i) {
+    return i * (w / dataset.length) + (w / dataset.length - barPadding) / 2;
+  })
+  .attr("y", function(d,i) {
+    return h+bottomSpace-(dataset[i].nbcoureurs*heightFactor);
+  })
+  .attr("font-family", "sans-serif")
+  .attr("font-size", "11px")
+  .attr("fill", "white")
+  .attr("text-anchor", "middle")
+
   
- 
 })
 
 // fit a text to maximum number of char and carriage to another line if more

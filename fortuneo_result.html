@@ -12,7 +12,7 @@
 var w=500
 var h=300
 var barPadding=1
-var barSpace = 4
+var barSpace = 10
 var bottomSpace = 20
 var heightFactor = 2
 
@@ -46,7 +46,7 @@ d3.csv("result-fort.csv", function(dataset) {
       return dataset[i].nbcoureurs*heightFactor
   })
   .attr("fill", function(d) {
-    return "rgb(190, 190, 190)";
+    return "rgb(150, 150, 150)";
   })
 
   // foreach coureur
@@ -103,7 +103,7 @@ d3.csv("result-fort.csv", function(dataset) {
   .attr("y", function(d,i) {
     return h+bottomSpace-2;
   })
-  .attr("font-family", "sans-serif")
+  .attr("font-family", "Arial")
   .attr("font-size", "11px")
   .attr("fill", "grey")
   .attr("text-anchor", "middle")
@@ -115,15 +115,15 @@ d3.csv("result-fort.csv", function(dataset) {
     return dataset[i].nbcoureurs
   })
   .attr("x", function(d, i) {
-    return i * (w / dataset.length) + (w / dataset.length - barPadding) / 2;
+    return i * (w / dataset.length)
   })
   .attr("y", function(d,i) {
-    return h+bottomSpace-(dataset[i].nbcoureurs*heightFactor);
+    return h+bottomSpace-(dataset[i].nbcoureurs*heightFactor)-21;
   })
-  .attr("font-family", "sans-serif")
+  .attr("font-family", "Helvetica")
   .attr("font-size", "11px")
-  .attr("fill", "white")
-  .attr("text-anchor", "middle")
+  .attr("fill", "black")
+  .attr("text-anchor", "start")
 
   
 })

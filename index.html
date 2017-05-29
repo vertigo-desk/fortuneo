@@ -9,7 +9,7 @@
         <script type="text/javascript">
 
 // defintion du canvas
-var w=500
+var w=700
 var h=300
 var barPadding=1
 var barSpace = 10
@@ -46,7 +46,7 @@ d3.csv("result-fort.csv", function(dataset) {
       return dataset[i].nbcoureurs*heightFactor
   })
   .attr("fill", function(d) {
-    return "rgb(150, 150, 150)";
+    return "rgb(170, 170, 170)";
   })
 
   // foreach coureur

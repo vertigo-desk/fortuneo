@@ -10,13 +10,13 @@
 
 // defintion du canvas
 var w=700
-var h=300
+var h=500
 var barPadding=1
-var barSpace = 10
+var barSpace = 20
 var bottomSpace = 20
-var heightFactor = 2
+var heightFactor = 3
 
-var svg = d3.select("body")
+var svgContainer = d3.select("body")
 .append("svg")
 .attr("width", w)
 .attr("height", h+bottomSpace);
@@ -29,7 +29,7 @@ d3.csv("result-fort.csv", function(dataset) {
   })
 
   // elements rect
-  var elts = svg.selectAll("rect")
+  var elts = svgContainer.selectAll("rect")
   .data(dataset)
   .enter();
 
@@ -45,14 +45,12 @@ d3.csv("result-fort.csv", function(dataset) {
   .attr("height", function(d, i) {
       return dataset[i].nbcoureurs*heightFactor
   })
-  .attr("fill", function(d) {
-    return "rgb(170, 170, 170)";
-  })
+  .attr("fill", "rgb(170, 170, 170)")
 
   // foreach coureur
   d3.keys(dataset[1]).forEach(function(key,index) {
-
     if (index >= 2) {
+
      //bar par coureur
       elts.append("rect")
       .attr("id", key)
@@ -68,27 +66,52 @@ d3.csv("result-fort.csv", function(dataset) {
         return h-(dataset[i][key]*heightFactor)
       })
       .attr("width", w / dataset.length -barSpace)
-      .attr("height", function(d) {
-        return 1 * heightFactor
-      })
-      .attr("fill", function(d) {
-        return "rgb(20, 150, 20)"
-      })
+      .attr("height", heightFactor)
+      .attr("fill", "rgb(20, 150, 20)")
       .on("mouseover", function() {
         d3.selectAll("#"+key)
         .attr("fill","rgb(70, 200, 70)")
-        .attr("height",heightFactor+1)
+        .attr("stroke", "rgb(70, 200, 70)")
       })
       .on("mouseout", function() {
         d3.selectAll("#"+key)
         .attr("fill","rgb(20, 150, 20)")
-        .attr("height",heightFactor)
+        .attr("stroke", "rgb(20, 150, 20)")
       })
+
+      // ligne jonction
+      elts.append("line")
+      .attr("id", key)
+      .attr("visibility", function(d, i) {
+        if (dataset[i][key] > 0) 
+          return "visible"
+        else return "hidden"
+      })
+      .attr("x1", function(d, i) {
+        return (i+1) * (w / dataset.length) - barSpace
+      })
+      .attr("y1", function(d,i) {
+        return h-(dataset[i][key]*heightFactor)+1
+      })
+      .attr("x2", function(d, i) {
+        return (i+1) * (w / dataset.length)
+      })
+      .attr("y2", function(d,i) {
+        if (i<dataset.length-1) {
+          var nextRaceIndex = i+1
+          if (dataset[nextRaceIndex][key] > 0)
+            return h-(dataset[nextRaceIndex][key]*heightFactor)+1
+          else return h
+        }
+      })
+      .attr("stroke-width", heightFactor)
+      .attr("stroke", "rgb(20, 150, 20)")
+
     }
   })
 
   // elts text
-  var text = svg.selectAll("text")
+  var text = svgContainer.selectAll("text")
   .data(dataset)
   .enter()
 
@@ -108,7 +131,7 @@ d3.csv("result-fort.csv", function(dataset) {
   .attr("fill", "grey")
   .attr("text-anchor", "middle")
 
- //nombre coureurs
+  //nombre coureurs
   text.append("text")
   .text(function(d,i) {
     console.log(dataset[i].nbcoureurs)
@@ -125,7 +148,6 @@ d3.csv("result-fort.csv", function(dataset) {
   .attr("fill", "black")
   .attr("text-anchor", "start")
 
-  
 })
 
 // fit a text to maximum number of char and carriage to another line if more

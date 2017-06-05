@@ -71,12 +71,10 @@ d3.csv("result-fort.csv", function(dataset) {
       .on("mouseover", function() {
         d3.selectAll("#"+key)
         .attr("fill","rgb(70, 200, 70)")
-        .attr("stroke", "rgb(70, 200, 70)")
       })
       .on("mouseout", function() {
         d3.selectAll("#"+key)
         .attr("fill","rgb(20, 150, 20)")
-        .attr("stroke", "rgb(20, 150, 20)")
       })
 
       // ligne jonction
@@ -106,6 +104,30 @@ d3.csv("result-fort.csv", function(dataset) {
       })
       .attr("stroke-width", heightFactor)
       .attr("stroke", "rgb(20, 150, 20)")
+
+
+
+      // curve jonction
+      var lineGenerator = d3.line().curve(d3.curveCardinal);
+
+      var points = [
+        [0, 80],
+        [100, 100],
+        [200, 30],
+        [300, 50],
+        [400, 40], 
+        [500, 80]
+      ];
+
+
+      var lineGraph = svgContainer.append("path")
+      .attr("d", lineGenerator(points))
+      .attr("stroke", "blue")
+      .attr("stroke-width", 2)
+      .attr("fill", "none");
+
+
+
 
     }
   })
@@ -154,6 +176,8 @@ d3.csv("result-fort.csv", function(dataset) {
 function fitParagraph(nbChar, text) {
   return text.substring(0,nbChar)
 }
+
+
 
        </script>
     </body>

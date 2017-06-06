@@ -12,7 +12,7 @@
 var w=700
 var h=500
 var barPadding=1
-var barSpace = 20
+var barSpace = 30
 var bottomSpace = 20
 var heightFactor = 3
 
@@ -71,58 +71,39 @@ d3.csv("result-fort.csv", function(dataset) {
       .on("mouseover", function() {
         d3.selectAll("#"+key)
         .attr("fill","rgb(70, 200, 70)")
+        d3.selectAll("#"+key+"join")
+        .attr("visibility","visible")
       })
       .on("mouseout", function() {
         d3.selectAll("#"+key)
         .attr("fill","rgb(20, 150, 20)")
+        d3.selectAll("#"+key+"join")
+        .attr("visibility","hidden")
       })
 
-      // ligne jonction
-      elts.append("line")
-      .attr("id", key)
-      .attr("visibility", function(d, i) {
-        if (dataset[i][key] > 0) 
-          return "visible"
-        else return "hidden"
-      })
-      .attr("x1", function(d, i) {
-        return (i+1) * (w / dataset.length) - barSpace
-      })
-      .attr("y1", function(d,i) {
-        return h-(dataset[i][key]*heightFactor)+1
-      })
-      .attr("x2", function(d, i) {
-        return (i+1) * (w / dataset.length)
-      })
-      .attr("y2", function(d,i) {
+      // curve jonction
+      var lineGenerator = d3.line().curve(d3.curveBasis);
+ 
+      elts.append("path")
+      .attr("id", key+"join")
+      .attr("visibility", "hidden")
+      .attr("d", function(d,i) {
         if (i<dataset.length-1) {
           var nextRaceIndex = i+1
           if (dataset[nextRaceIndex][key] > 0)
-            return h-(dataset[nextRaceIndex][key]*heightFactor)+1
-          else return h
+            return lineGenerator([
+              [((i+1) * (w / dataset.length) - barSpace), (h-(dataset[i][key]*heightFactor))+1],
+              [((i+1) * (w / dataset.length) - barSpace) + (barSpace/4), (h-(dataset[i][key]*heightFactor))+1],
+              [((i+1) * (w / dataset.length)) - (barSpace/4), (h-(dataset[nextRaceIndex][key]*heightFactor))+1],
+              [((i+1) * (w / dataset.length)), (h-(dataset[nextRaceIndex][key]*heightFactor))+1]])
+          else return lineGenerator([
+              [((i+1) * (w / dataset.length) - barSpace), (h-(dataset[i][key]*heightFactor))+1],
+              [((i+1) * (w / dataset.length) - barSpace) + (barSpace/4), (h-(dataset[i][key]*heightFactor))+1],
+              [((i+1) * (w / dataset.length)) - (barSpace/4), (h-(dataset[nextRaceIndex][key]*heightFactor))+1],
+              [((i+1) * (w / dataset.length)), (h)+1]])
         }
       })
-      .attr("stroke-width", heightFactor)
-      .attr("stroke", "rgb(20, 150, 20)")
-
-
-
-      // curve jonction
-      var lineGenerator = d3.line().curve(d3.curveCardinal);
-
-      var points = [
-        [0, 80],
-        [100, 100],
-        [200, 30],
-        [300, 50],
-        [400, 40], 
-        [500, 80]
-      ];
-
-
-      var lineGraph = svgContainer.append("path")
-      .attr("d", lineGenerator(points))
-      .attr("stroke", "blue")
+      .attr("stroke", "rgb(70, 200, 70)")
       .attr("stroke-width", 2)
       .attr("fill", "none");
 
@@ -156,7 +137,7 @@ d3.csv("result-fort.csv", function(dataset) {
   //nombre coureurs
   text.append("text")
   .text(function(d,i) {
-    console.log(dataset[i].nbcoureurs)
+    //console.log(dataset[i].nbcoureurs)
     return dataset[i].nbcoureurs
   })
   .attr("x", function(d, i) {

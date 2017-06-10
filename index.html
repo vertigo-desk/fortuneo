@@ -9,13 +9,13 @@
         <script type="text/javascript">
 
 // defintion du canvas
-var w=700
+var w=800
 var h=500
 var barPadding=1
 var barSpace = 30
 var bottomSpace = 20
 var heightFactor = 3
-var leftPannel = 100
+var leftPannel = 10
 
 var svgContainer = d3.select("body")
 .attr("bgcolor", "#101010")
@@ -28,7 +28,7 @@ var svgContainer = d3.select("body")
 .attr("x", leftPannel)
 
 // initialisation du dataset
-d3.csv("result-fort.csv", function(dataset) {
+d3.csv("result-fort_name.csv", function(dataset) {
   dataset.forEach(function(course) {
     course.nbcoureurs = + course.nbcoureurs;
   })

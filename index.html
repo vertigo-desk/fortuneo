@@ -68,7 +68,7 @@ d3.csv("result-fort_name.csv", function(dataset) {
         return i * (w / dataset.length)
       })
       .attr("y", function(d,i) {
-        return h-(dataset[i][key]*heightFactor)
+        return h-((dataset[i].nbcoureurs-dataset[i][key]+1)*heightFactor)
       })
       .attr("width", w / dataset.length -barSpace)
       .attr("height", heightFactor)
@@ -79,7 +79,7 @@ d3.csv("result-fort_name.csv", function(dataset) {
         d3.selectAll("#"+key+"join")
         .attr("stroke","rgb(70, 200, 70)")
         .attr("stroke-width", 2)
-
+        .attr("visibility", "visible")
       })
       .on("mouseout", function() {
         d3.selectAll("#"+key)
@@ -99,22 +99,25 @@ d3.csv("result-fort_name.csv", function(dataset) {
       .attr("d", function(d,i) {
         if (i<dataset.length-1) {
           var nextRaceIndex = i+1
+          var position = dataset[i].nbcoureurs-dataset[i][key]
+          var nextPosition = dataset[nextRaceIndex].nbcoureurs-dataset[nextRaceIndex][key]
           if (dataset[nextRaceIndex][key] > 0)
             return lineGenerator([
-              [((i+1) * (w / dataset.length) - barSpace), (h-(dataset[i][key]*heightFactor))+1],
-              [((i+1) * (w / dataset.length) - barSpace) + (barSpace/4), (h-(dataset[i][key]*heightFactor))+1],
-              [((i+1) * (w / dataset.length)) - (barSpace/4), (h-(dataset[nextRaceIndex][key]*heightFactor))+1],
-              [((i+1) * (w / dataset.length)), (h-(dataset[nextRaceIndex][key]*heightFactor))+1]])
+              [((i+1) * (w / dataset.length) - barSpace), (h-(position*heightFactor))+1],
+              [((i+1) * (w / dataset.length) - barSpace) + (barSpace/4), (h-(position*heightFactor))+1],
+              [((i+1) * (w / dataset.length)) - (barSpace/4), (h-(nextPosition*heightFactor))+1],
+              [((i+1) * (w / dataset.length)), (h-(nextPosition*heightFactor))+1]])
           else return lineGenerator([
-              [((i+1) * (w / dataset.length) - barSpace), (h-(dataset[i][key]*heightFactor))+1],
-              [((i+1) * (w / dataset.length) - barSpace) + (barSpace/4), (h-(dataset[i][key]*heightFactor))+1],
-              [((i+1) * (w / dataset.length)) - (barSpace/4), (h-(dataset[nextRaceIndex][key]*heightFactor))+1],
+              [((i+1) * (w / dataset.length) - barSpace), (h-(position*heightFactor))+1],
+              [((i+1) * (w / dataset.length) - barSpace) + (barSpace/4), (h-(position*heightFactor))+1],
+              [((i+1) * (w / dataset.length)) - (barSpace/4), (h)+1],
               [((i+1) * (w / dataset.length)), (h)+1]])
         }
       })
       .attr("stroke", "rgb(80, 80, 80)")
       .attr("stroke-width", 1)
       .attr("fill", "none")
+      .attr("visibility", "hidden")
     }
   })
 

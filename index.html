@@ -15,17 +15,21 @@ var barPadding=1
 var barSpace = 30
 var bottomSpace = 20
 var heightFactor = 3
-var leftPannel = 10
+var leftPannel = 100
 
 var svgContainer = d3.select("body")
 .attr("bgcolor", "#101010")
 .append("svg")
 .attr("width", w+leftPannel)
 .attr("height", h+bottomSpace)
+.attr("id", "backPan")
 .append("svg")
 .attr("width", w)
 .attr("height", h+bottomSpace)
 .attr("x", leftPannel)
+.attr("id", "mainPan")
+
+
 
 // initialisation du dataset
 d3.csv("result-fort_name.csv", function(dataset) {
@@ -33,6 +37,8 @@ d3.csv("result-fort_name.csv", function(dataset) {
     course.nbcoureurs = + course.nbcoureurs;
   })
 
+  
+ 
   // elements rect
   var elts = svgContainer.selectAll("rect")
   .data(dataset)
@@ -85,11 +91,8 @@ d3.csv("result-fort_name.csv", function(dataset) {
         d3.selectAll("#"+key)
         .attr("fill","rgb(20, 150, 20)")
         d3.selectAll("#"+key+"join")
-        .attr("stroke", "rgb(80, 80, 80)")
-        .attr("stroke-width", 1)
+        .attr("visibility", "hidden")
       })
-      .append("svg:title")
-      .text(function(d) { return key; })
 
       // curve jonction
       var lineGenerator = d3.line().curve(d3.curveBasis);
@@ -99,19 +102,23 @@ d3.csv("result-fort_name.csv", function(dataset) {
       .attr("d", function(d,i) {
         if (i<dataset.length-1) {
           var nextRaceIndex = i+1
-          var position = dataset[i].nbcoureurs-dataset[i][key]
-          var nextPosition = dataset[nextRaceIndex].nbcoureurs-dataset[nextRaceIndex][key]
-          if (dataset[nextRaceIndex][key] > 0)
-            return lineGenerator([
+          var position = 0
+          if (dataset[i][key] > 0) {
+            position = dataset[i].nbcoureurs-dataset[i][key]
+          }
+
+
+          var nextPosition = 0
+          if (dataset[nextRaceIndex][key] > 0) {
+            nextPosition = dataset[nextRaceIndex].nbcoureurs-dataset[nextRaceIndex][key]
+          }
+          return lineGenerator([
               [((i+1) * (w / dataset.length) - barSpace), (h-(position*heightFactor))+1],
               [((i+1) * (w / dataset.length) - barSpace) + (barSpace/4), (h-(position*heightFactor))+1],
               [((i+1) * (w / dataset.length)) - (barSpace/4), (h-(nextPosition*heightFactor))+1],
               [((i+1) * (w / dataset.length)), (h-(nextPosition*heightFactor))+1]])
-          else return lineGenerator([
-              [((i+1) * (w / dataset.length) - barSpace), (h-(position*heightFactor))+1],
-              [((i+1) * (w / dataset.length) - barSpace) + (barSpace/4), (h-(position*heightFactor))+1],
-              [((i+1) * (w / dataset.length)) - (barSpace/4), (h)+1],
-              [((i+1) * (w / dataset.length)), (h)+1]])
+
+          
         }
       })
       .attr("stroke", "rgb(80, 80, 80)")
@@ -158,6 +165,43 @@ d3.csv("result-fort_name.csv", function(dataset) {
   .attr("font-size", "11px")
   .attr("fill", "rgb(200, 200, 200)")
   .attr("text-anchor", "start")
+
+  //rider list
+  var headers = d3.keys(dataset[0]);
+  for (var i = 2; i < headers.length; i++) {
+    d3.select("#backPan")
+      .append("rect")
+      .attr("id",headers[i])
+      .attr("x", 10)
+      .attr("y", 15*i)
+      .attr("width", leftPannel-20)
+      .attr("height", 10)
+      .attr("fill", "rgb(20, 150, 20)")
+      .on("mouseover", function() {
+        console.log(i)
+        d3.selectAll("#"+headers[i])
+        .attr("fill","rgb(70, 200, 70)")
+        d3.selectAll("#"+headers[i]+"join")
+        .attr("stroke","rgb(70, 200, 70)")
+        .attr("stroke-width", 2)
+        .attr("visibility", "visible")
+      })
+      .on("mouseout", function() {
+        d3.selectAll("#"+headers[i])
+        .attr("fill","rgb(20, 150, 20)")
+        d3.selectAll("#"+headers[i]+"join")
+        .attr("visibility", "hidden")
+      })
+      d3.select("#backPan")
+      .append("text")
+      .text(headers[i])
+      .attr("x", 11)
+      .attr("y", (15*i)+10)
+      .attr("font-family", "Helvetica")
+      .attr("font-size", "11px")
+      .attr("fill", "#101010")
+      .attr("text-anchor", "start")
+  }
 
 })
 

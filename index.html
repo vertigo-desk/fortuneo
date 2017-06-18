@@ -36,8 +36,6 @@ d3.csv("result-fort_name.csv", function(dataset) {
   dataset.forEach(function(course) {
     course.nbcoureurs = + course.nbcoureurs;
   })
-
-  
  
   // elements rect
   var elts = svgContainer.selectAll("rect")
@@ -106,19 +104,15 @@ d3.csv("result-fort_name.csv", function(dataset) {
           if (dataset[i][key] > 0) {
             position = dataset[i].nbcoureurs-dataset[i][key]
           }
-
-
           var nextPosition = 0
           if (dataset[nextRaceIndex][key] > 0) {
             nextPosition = dataset[nextRaceIndex].nbcoureurs-dataset[nextRaceIndex][key]
           }
           return lineGenerator([
-              [((i+1) * (w / dataset.length) - barSpace), (h-(position*heightFactor))+1],
-              [((i+1) * (w / dataset.length) - barSpace) + (barSpace/4), (h-(position*heightFactor))+1],
-              [((i+1) * (w / dataset.length)) - (barSpace/4), (h-(nextPosition*heightFactor))+1],
-              [((i+1) * (w / dataset.length)), (h-(nextPosition*heightFactor))+1]])
-
-          
+              [((i+1) * (w / dataset.length) - barSpace), (h-(position*heightFactor))-1],
+              [((i+1) * (w / dataset.length) - barSpace) + (barSpace/4), (h-(position*heightFactor))-1],
+              [((i+1) * (w / dataset.length)) - (barSpace/4), (h-(nextPosition*heightFactor))-1],
+              [((i+1) * (w / dataset.length)), (h-(nextPosition*heightFactor))-1]])
         }
       })
       .attr("stroke", "rgb(80, 80, 80)")
@@ -167,42 +161,41 @@ d3.csv("result-fort_name.csv", function(dataset) {
   .attr("text-anchor", "start")
 
   //rider list
-  var headers = d3.keys(dataset[0]);
-  for (var i = 2; i < headers.length; i++) {
-    d3.select("#backPan")
+  d3.keys(dataset[0]).forEach(function(key,index) {
+    if (index >= 2) {
+      d3.select("#backPan")
       .append("rect")
-      .attr("id",headers[i])
-      .attr("x", 10)
-      .attr("y", 15*i)
+      .attr("id",key)
+      .attr("x", 5)
+      .attr("y", 15*index)
       .attr("width", leftPannel-20)
       .attr("height", 10)
       .attr("fill", "rgb(20, 150, 20)")
       .on("mouseover", function() {
-        console.log(i)
-        d3.selectAll("#"+headers[i])
+        d3.selectAll("#"+key)
         .attr("fill","rgb(70, 200, 70)")
-        d3.selectAll("#"+headers[i]+"join")
+        d3.selectAll("#"+key+"join")
         .attr("stroke","rgb(70, 200, 70)")
         .attr("stroke-width", 2)
         .attr("visibility", "visible")
       })
       .on("mouseout", function() {
-        d3.selectAll("#"+headers[i])
+        d3.selectAll("#"+key)
         .attr("fill","rgb(20, 150, 20)")
-        d3.selectAll("#"+headers[i]+"join")
+        d3.selectAll("#"+key+"join")
         .attr("visibility", "hidden")
       })
       d3.select("#backPan")
       .append("text")
-      .text(headers[i])
-      .attr("x", 11)
-      .attr("y", (15*i)+10)
+      .text(key)
+      .attr("x", 6)
+      .attr("y", (15*index)+10)
       .attr("font-family", "Helvetica")
       .attr("font-size", "11px")
       .attr("fill", "#101010")
       .attr("text-anchor", "start")
-  }
-
+    }
+  })
 })
 
 // fit a text to maximum number of char and carriage to another line if more

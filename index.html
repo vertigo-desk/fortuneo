@@ -13,7 +13,7 @@ var w=800
 var h=500
 var barPadding=1
 var barSpace = 30
-var bottomSpace = 20
+var bottomSpace = 40
 var heightFactor = 3
 var leftPannel = 100
 
@@ -142,6 +142,9 @@ d3.csv("result-fort_name.csv", function(dataset) {
   .attr("font-size", "11px")
   .attr("fill", "rgb(200, 200, 200)")
   .attr("text-anchor", "middle")
+  .attr("transform", function(d, i) {
+    return "rotate(-20,"+((i*(w / dataset.length) + (w/dataset.length-barPadding)/2)-20)+","+(h+bottomSpace-30)+")"
+  })
 
   //nombre coureurs
   text.append("text")
@@ -153,7 +156,7 @@ d3.csv("result-fort_name.csv", function(dataset) {
     return i * (w / dataset.length)
   })
   .attr("y", function(d,i) {
-    return h+bottomSpace-(dataset[i].nbcoureurs*heightFactor)-21;
+    return h+bottomSpace-(dataset[i].nbcoureurs*heightFactor)-41;
   })
   .attr("font-family", "Helvetica")
   .attr("font-size", "11px")

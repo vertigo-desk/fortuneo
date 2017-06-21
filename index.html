@@ -13,7 +13,7 @@ var w=800
 var h=500
 var barPadding=1
 var barSpace = 30
-var bottomSpace = 40
+var bottomSpace = 70
 var heightFactor = 3
 var leftPannel = 100
 
@@ -133,17 +133,17 @@ d3.csv("result-fort_name.csv", function(dataset) {
     return fitParagraph(17,dataset[i].epreuve);
   })
   .attr("x", function(d, i) {
-    return i * (w / dataset.length) + (w / dataset.length - barPadding) / 2;
+    return (i*(w / dataset.length))-30;
   })
   .attr("y", function(d,i) {
-    return h+bottomSpace-2;
+    return h+bottomSpace-5;
   })
   .attr("font-family", "Arial")
   .attr("font-size", "11px")
   .attr("fill", "rgb(200, 200, 200)")
-  .attr("text-anchor", "middle")
+  .attr("text-anchor", "start")
   .attr("transform", function(d, i) {
-    return "rotate(-20,"+((i*(w / dataset.length) + (w/dataset.length-barPadding)/2)-20)+","+(h+bottomSpace-30)+")"
+    return "rotate(-40,"+((i*(w / dataset.length))-30)+","+(h+bottomSpace-5)+")"
   })
 
   //nombre coureurs
@@ -156,7 +156,7 @@ d3.csv("result-fort_name.csv", function(dataset) {
     return i * (w / dataset.length)
   })
   .attr("y", function(d,i) {
-    return h+bottomSpace-(dataset[i].nbcoureurs*heightFactor)-41;
+    return h+bottomSpace-(dataset[i].nbcoureurs*heightFactor)-bottomSpace-1;
   })
   .attr("font-family", "Helvetica")
   .attr("font-size", "11px")
@@ -197,6 +197,20 @@ d3.csv("result-fort_name.csv", function(dataset) {
       .attr("font-size", "11px")
       .attr("fill", "#101010")
       .attr("text-anchor", "start")
+      .on("mouseover", function() {
+        d3.selectAll("#"+key)
+        .attr("fill","rgb(70, 200, 70)")
+        d3.selectAll("#"+key+"join")
+        .attr("stroke","rgb(70, 200, 70)")
+        .attr("stroke-width", 2)
+        .attr("visibility", "visible")
+      })
+      .on("mouseout", function() {
+        d3.selectAll("#"+key)
+        .attr("fill","rgb(20, 150, 20)")
+        d3.selectAll("#"+key+"join")
+        .attr("visibility", "hidden")
+      })
     }
   })
 })

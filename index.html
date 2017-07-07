@@ -9,8 +9,8 @@
         <script type="text/javascript">
 
 // defintion du canvas
-var w=1000
-var h=550
+var w=500
+var h=620
 var barPadding=1
 var barSpace = 20
 var bottomSpace = 70
@@ -24,7 +24,7 @@ var svgContainer = d3.select("body")
 .attr("height", h+bottomSpace)
 .attr("id", "backPan")
 .append("svg")
-.attr("width", w)
+.attr("width", w) 
 .attr("height", h+bottomSpace)
 .attr("x", leftPannel)
 .attr("id", "mainPan")
@@ -32,7 +32,7 @@ var svgContainer = d3.select("body")
 
 
 // initialisation du dataset
-d3.csv("result_fortuneo.csv", function(dataset) {
+d3.csv("result_fortuneo_tdf.csv", function(dataset) {
   dataset.forEach(function(course) {
     course.nbcoureurs = + course.nbcoureurs;
   })

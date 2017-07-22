@@ -32,7 +32,7 @@ var svgContainer = d3.select("body")
 
 
 // initialisation du dataset
-d3.csv("result_fortuneo_tdf.csv", function(dataset) {
+d3.csv("result_ag2r_tdf.csv", function(dataset) {
   dataset.forEach(function(course) {
     course.nbcoureurs = + course.nbcoureurs;
   })

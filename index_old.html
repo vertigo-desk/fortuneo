@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="utf-8">
+        <title>Fortuneo</title>
+        <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+    </head>
+    <body>
+        <script type="text/javascript">
+
+// defintion du canvas
+// backPan
+// |-- teamPan + ridersPan + graphPan
+var h=620
+var barPadding=1
+var barSpace = 20
+var bottomSpace = 70
+var heightFactor = 3
+var teamPanW = 150
+var ridersPanW = 130
+var graphPanW = 970
+var w=teamPanW+ridersPanW+graphPanW
+
+var svgContainer = d3.select("body")
+.append("div")
+.attr("width", w)
+.attr("id", "backPan")
+.style("height", h+"px")
+.style("width", w+"px")
+.style("overflow","hidden")
+
+// svg team list
+d3.select("#backPan")
+.append("div")
+.style("height", h+"px")
+.style("overflow-y","scroll")
+.style("overflow-x","hidden")
+.style("width", teamPanW+"px")
+.append("svg")
+.attr("width", teamPanW)
+.attr("height", 3000)
+.attr("id", "teamPan")
+
+// svg riders list
+d3.select("#backPan")
+.append("div")
+.style("height", h+"px")
+.style("overflow-y","scroll")
+.style("overflow-x","hidden")
+.style("width", ridersPanW+"px")
+.style("margin-left", teamPanW+"px")
+.append("svg")
+.attr("width", ridersPanW)
+.attr("height", 3000)
+.attr("id", "ridersPan")
+
+
+// svg graphic list
+d3.select("#backPan")
+.append("svg")
+.attr("width", graphPanW)
+.attr("height", h+bottomSpace)
+.attr("x", ridersPanW+teamPanW)
+.attr("id", "graphPan")
+
+d3.csv("tab.csv", function(dataset) {
+  dataset.forEach(function(course) {
+    // to numeric
+    course.nbcoureurs = + course.nbcoureurs;
+  })
+ 	
+
+  //team list
+  d3.keys(dataset[0]).forEach(function(key,index) {
+    if (index >= 2) {
+    	// rect team elt
+      d3.select("#teamPan")
+      .append("rect")
+      .attr("id",key)
+      .attr("x", 5)
+      .attr("y", 15*index)
+      .attr("width", 20)
+      .attr("height", 10)
+      .attr("fill", "rgb(20, 150, 20)")
+      .on("mouseover", function() {
+        d3.selectAll("#"+key)
+        .attr("fill","rgb(70, 200, 70)")
+        d3.selectAll("#"+key+"join")
+        .attr("stroke","rgb(70, 200, 70)")
+        .attr("stroke-width", 2)
+        .attr("visibility", "visible")
+      })
+      .on("mouseout", function() {
+        d3.selectAll("#"+key)
+        .attr("fill","rgb(20, 150, 20)")
+        d3.selectAll("#"+key+"join")
+        .attr("visibility", "hidden")
+      })
+      d3.select("#teamPan")
+      .append("text")
+      .text(key)
+      .attr("x", 6)
+      .attr("y", (15*index)+10)
+      .attr("font-family", "Helvetica")
+      .attr("font-size", "11px")
+      .attr("fill", "#101010")
+      .attr("text-anchor", "start")
+      .on("mouseover", function() {
+        d3.selectAll("#"+key)
+        .attr("fill","rgb(70, 200, 70)")
+        d3.selectAll("#"+key+"join")
+        .attr("stroke","rgb(70, 200, 70)")
+        .attr("stroke-width", 2)
+        .attr("visibility", "visible")
+      })
+      .on("mouseout", function() {
+        d3.selectAll("#"+key)
+        .attr("fill","rgb(20, 150, 20)")
+        d3.selectAll("#"+key+"join")
+        .attr("visibility", "hidden")
+      })
+    }
+  })
+
+
+//rider list
+  d3.keys(dataset[2]).forEach(function(key,index) {
+    if (index >= 2) {
+    	// rect team elt
+      d3.select("#ridersPan")
+      .append("rect")
+      .attr("id",key)
+      .attr("x", 5)
+      .attr("y", 15*index)
+      .attr("width", 20)
+      .attr("height", 10)
+      .attr("fill", "rgb(20, 150, 20)")
+      .on("mouseover", function() {
+        d3.selectAll("#"+key)
+        .attr("fill","rgb(70, 200, 70)")
+        d3.selectAll("#"+key+"join")
+        .attr("stroke","rgb(70, 200, 70)")
+        .attr("stroke-width", 2)
+        .attr("visibility", "visible")
+      })
+      .on("mouseout", function() {
+        d3.selectAll("#"+key)
+        .attr("fill","rgb(20, 150, 20)")
+        d3.selectAll("#"+key+"join")
+        .attr("visibility", "hidden")
+      })
+      d3.select("#ridersPan")
+      .append("text")
+      .text(key)
+      .attr("x", 6)
+      .attr("y", (15*index)+10)
+      .attr("font-family", "Helvetica")
+      .attr("font-size", "11px")
+      .attr("fill", "#101010")
+      .attr("text-anchor", "start")
+      .on("mouseover", function() {
+        d3.selectAll("#"+key)
+        .attr("fill","rgb(70, 200, 70)")
+        d3.selectAll("#"+key+"join")
+        .attr("stroke","rgb(70, 200, 70)")
+        .attr("stroke-width", 2)
+        .attr("visibility", "visible")
+      })
+      .on("mouseout", function() {
+        d3.selectAll("#"+key)
+        .attr("fill","rgb(20, 150, 20)")
+        d3.selectAll("#"+key+"join")
+        .attr("visibility", "hidden")
+      })
+    }
+  })
+
+})
+
+// fit a text to maximum number of char and carriage to another line if more
+function fitParagraph(nbChar, text) {
+  return text.substring(0,nbChar)
+}
+
+       </script>
+    </body>
+</html>

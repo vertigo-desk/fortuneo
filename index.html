@@ -48,7 +48,7 @@ d3.csv("result_fortuneo_tdf.csv", function(dataset) {
   .attr("height", function(d, i) {
       return dataset[i].nbcoureurs*heightFactor
   })
-  .attr("fill", "#AAAAAA")
+  .attr("fill", "#D6D6D6")
   // foreach coureur
   d3.keys(dataset[1]).forEach(function(key,index) {
     if (index >= 2) {
@@ -116,29 +116,12 @@ d3.csv("result_fortuneo_tdf.csv", function(dataset) {
   var text = svgContainer.selectAll("text")
   .data(dataset)
   .enter()
-  //nom epreuve
-  text.append("text")
-  .text(function(d,i) {
-    return fitParagraph(17,dataset[i].epreuve);
-  })
-  .attr("x", function(d, i) {
-    return (i*(w / dataset.length))-30;
-  })
-  .attr("y", function(d,i) {
-    return h+bottomSpace-5;
-  })
-  .attr("font-family", "Arial")
-  .attr("font-size", "11px")
-  .attr("fill", "rgb(200, 200, 200)")
-  .attr("text-anchor", "start")
-  .attr("transform", function(d, i) {
-    return "rotate(-40,"+((i*(w / dataset.length))-30)+","+(h+bottomSpace-5)+")"
-  })
-  //nombre coureurs
+
+  //numero etape
   text.append("text")
   .text(function(d,i) {
     //console.log(dataset[i].nbcoureurs)
-    return dataset[i].nbcoureurs
+    return i+1
   })
   .attr("x", function(d, i) {
     return i * (w / dataset.length)
@@ -150,6 +133,7 @@ d3.csv("result_fortuneo_tdf.csv", function(dataset) {
   .attr("font-size", "11px")
   .attr("fill", "#000000")
   .attr("text-anchor", "start")
+
   //rider list
   d3.keys(dataset[0]).forEach(function(key,index) {
     if (index >= 2) {

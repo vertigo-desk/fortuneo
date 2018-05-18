@@ -9,7 +9,7 @@
         <script type="text/javascript">
 
 // defintion du canvas
-var w=700
+var w=900
 var h=620
 var barPadding=1
 var barSpace = 20
@@ -32,8 +32,9 @@ var svgContainer = d3.select("body")
 
 
 // initialisation du dataset
-d3.csv("result_ag2r_tdf.csv", function(dataset) {
+d3.csv("tab", function(dataset) {
   dataset.forEach(function(course) {
+    // to numeric
     course.nbcoureurs = + course.nbcoureurs;
   })
  

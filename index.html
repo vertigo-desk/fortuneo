@@ -7,181 +7,204 @@
     </head>
     <body>
         <script type="text/javascript">
-
 // defintion du canvas
-// backPan
-// |-- teamPan + ridersPan + graphPan
+var w=700
 var h=620
 var barPadding=1
-var barSpace = 20
+var barSpace = 15
 var bottomSpace = 70
 var heightFactor = 3
-var teamPanW = 150
-var ridersPanW = 130
-var graphPanW = 970
-var w=teamPanW+ridersPanW+graphPanW
-
+var leftPannel = 130
 var svgContainer = d3.select("body")
-.append("div")
-.attr("width", w)
-.attr("id", "backPan")
-.style("height", h+"px")
-.style("width", w+"px")
-.style("overflow","hidden")
-
-// svg team list
-d3.select("#backPan")
-.append("div")
-.style("height", h+"px")
-.style("overflow-y","scroll")
-.style("overflow-x","hidden")
-.style("width", teamPanW+"px")
+.attr("bgcolor", "#FFFFFF")
 .append("svg")
-.attr("width", teamPanW)
-.attr("height", 3000)
-.attr("id", "teamPan")
-
-// svg riders list
-d3.select("#backPan")
-.append("div")
-.style("height", h+"px")
-.style("overflow-y","scroll")
-.style("overflow-x","hidden")
-.style("width", ridersPanW+"px")
-.style("margin-left", teamPanW+"px")
-.append("svg")
-.attr("width", ridersPanW)
-.attr("height", 3000)
-.attr("id", "ridersPan")
-
-
-// svg graphic list
-d3.select("#backPan")
-.append("svg")
-.attr("width", graphPanW)
+.attr("width", w+leftPannel)
 .attr("height", h+bottomSpace)
-.attr("x", ridersPanW+teamPanW)
-.attr("id", "graphPan")
-
-d3.csv("tab.csv", function(dataset) {
+.attr("id", "backPan")
+.append("svg")
+.attr("width", w) 
+.attr("height", h+bottomSpace)
+.attr("x", leftPannel)
+.attr("id", "mainPan")
+// initialisation du dataset
+d3.csv("result_fortuneo_tdf.csv", function(dataset) {
   dataset.forEach(function(course) {
-    // to numeric
     course.nbcoureurs = + course.nbcoureurs;
   })
- 	
-
-  //team list
+ 
+  // elements rect
+  var elts = svgContainer.selectAll("rect")
+  .data(dataset)
+  .enter();
+  //bar par epreuve
+  elts.append("rect")
+  .attr("x", function(d, i) {
+    return i * (w / dataset.length);
+  })
+  .attr("y", function(d,i) {
+      return h-(dataset[i].nbcoureurs*heightFactor);
+  })
+  .attr("width", w / dataset.length-barSpace)
+  .attr("height", function(d, i) {
+      return dataset[i].nbcoureurs*heightFactor
+  })
+  .attr("fill", "#AAAAAA")
+  // foreach coureur
+  d3.keys(dataset[1]).forEach(function(key,index) {
+    if (index >= 2) {
+     //bar par coureur
+      elts.append("rect")
+      .attr("id", key)
+      .attr("visibility", function(d, i) {
+        if (dataset[i][key] > 0) 
+          return "visible"
+        else return "hidden"
+      })
+      .attr("x", function(d, i) {
+        return i * (w / dataset.length)
+      })
+      .attr("y", function(d,i) {
+        return h-((dataset[i].nbcoureurs-dataset[i][key]+1)*heightFactor)
+      })
+      .attr("width", w / dataset.length -barSpace)
+      .attr("height", heightFactor)
+      .attr("fill", "#7fabd1")
+      .on("mouseover", function() {
+        d3.selectAll("#"+key)
+        .attr("fill","#337ab7")
+        d3.selectAll("#"+key+"join")
+        .attr("stroke","#337ab7")
+        .attr("stroke-width", 3)
+        .attr("visibility", "visible")
+      })
+      .on("mouseout", function() {
+        d3.selectAll("#"+key)
+        .attr("fill","#7fabd1")
+        d3.selectAll("#"+key+"join")
+        .attr("visibility", "hidden")
+      })
+      // curve jonction
+      var lineGenerator = d3.line().curve(d3.curveBasis);
+ 
+      elts.append("path")
+      .attr("id", key+"join")
+      .attr("d", function(d,i) {
+        if (i<dataset.length-1) {
+          var nextRaceIndex = i+1
+          var position = 0
+          if (dataset[i][key] > 0) {
+            position = dataset[i].nbcoureurs-dataset[i][key]
+          }
+          var nextPosition = 0
+          if (dataset[nextRaceIndex][key] > 0) {
+            nextPosition = dataset[nextRaceIndex].nbcoureurs-dataset[nextRaceIndex][key]
+          }
+          return lineGenerator([
+              [((i+1) * (w / dataset.length) - barSpace), (h-(position*heightFactor))-1],
+              [((i+1) * (w / dataset.length) - barSpace) + (barSpace/4), (h-(position*heightFactor))-1],
+              [((i+1) * (w / dataset.length)) - (barSpace/4), (h-(nextPosition*heightFactor))-1],
+              [((i+1) * (w / dataset.length)), (h-(nextPosition*heightFactor))-1]])
+        }
+      })
+      .attr("stroke", "rgb(80, 80, 80)")
+      .attr("stroke-width", 1)
+      .attr("fill", "none")
+      .attr("visibility", "hidden")
+    }
+  })
+  // elts text
+  var text = svgContainer.selectAll("text")
+  .data(dataset)
+  .enter()
+  //nom epreuve
+  text.append("text")
+  .text(function(d,i) {
+    return fitParagraph(17,dataset[i].epreuve);
+  })
+  .attr("x", function(d, i) {
+    return (i*(w / dataset.length))-30;
+  })
+  .attr("y", function(d,i) {
+    return h+bottomSpace-5;
+  })
+  .attr("font-family", "Arial")
+  .attr("font-size", "11px")
+  .attr("fill", "rgb(200, 200, 200)")
+  .attr("text-anchor", "start")
+  .attr("transform", function(d, i) {
+    return "rotate(-40,"+((i*(w / dataset.length))-30)+","+(h+bottomSpace-5)+")"
+  })
+  //nombre coureurs
+  text.append("text")
+  .text(function(d,i) {
+    //console.log(dataset[i].nbcoureurs)
+    return dataset[i].nbcoureurs
+  })
+  .attr("x", function(d, i) {
+    return i * (w / dataset.length)
+  })
+  .attr("y", function(d,i) {
+    return h+bottomSpace-(dataset[i].nbcoureurs*heightFactor)-bottomSpace-1;
+  })
+  .attr("font-family", "Helvetica")
+  .attr("font-size", "11px")
+  .attr("fill", "#000000")
+  .attr("text-anchor", "start")
+  //rider list
   d3.keys(dataset[0]).forEach(function(key,index) {
     if (index >= 2) {
-    	// rect team elt
-      d3.select("#teamPan")
+      d3.select("#backPan")
       .append("rect")
       .attr("id",key)
       .attr("x", 5)
       .attr("y", 15*index)
-      .attr("width", 20)
+      .attr("width", leftPannel-20)
       .attr("height", 10)
-      .attr("fill", "rgb(20, 150, 20)")
+      .attr("fill", "#7fabd1")
       .on("mouseover", function() {
         d3.selectAll("#"+key)
-        .attr("fill","rgb(70, 200, 70)")
+        .attr("fill","#337ab7")
         d3.selectAll("#"+key+"join")
-        .attr("stroke","rgb(70, 200, 70)")
-        .attr("stroke-width", 2)
+        .attr("stroke","#337ab7")
+        .attr("stroke-width", 3)
         .attr("visibility", "visible")
       })
       .on("mouseout", function() {
         d3.selectAll("#"+key)
-        .attr("fill","rgb(20, 150, 20)")
+        .attr("fill","#7fabd1")
         d3.selectAll("#"+key+"join")
         .attr("visibility", "hidden")
       })
-      d3.select("#teamPan")
+      d3.select("#backPan")
       .append("text")
       .text(key)
       .attr("x", 6)
       .attr("y", (15*index)+10)
       .attr("font-family", "Helvetica")
       .attr("font-size", "11px")
-      .attr("fill", "#101010")
+      .attr("fill", "#FFFFFF")
       .attr("text-anchor", "start")
       .on("mouseover", function() {
         d3.selectAll("#"+key)
-        .attr("fill","rgb(70, 200, 70)")
+        .attr("fill","#337ab7")
         d3.selectAll("#"+key+"join")
-        .attr("stroke","rgb(70, 200, 70)")
-        .attr("stroke-width", 2)
+        .attr("stroke","#337ab7")
+        .attr("stroke-width", 3)
         .attr("visibility", "visible")
       })
       .on("mouseout", function() {
         d3.selectAll("#"+key)
-        .attr("fill","rgb(20, 150, 20)")
+        .attr("fill","#7fabd1")
         d3.selectAll("#"+key+"join")
         .attr("visibility", "hidden")
       })
     }
   })
-
-
-//rider list
-  d3.keys(dataset[2]).forEach(function(key,index) {
-    if (index >= 2) {
-    	// rect team elt
-      d3.select("#ridersPan")
-      .append("rect")
-      .attr("id",key)
-      .attr("x", 5)
-      .attr("y", 15*index)
-      .attr("width", 20)
-      .attr("height", 10)
-      .attr("fill", "rgb(20, 150, 20)")
-      .on("mouseover", function() {
-        d3.selectAll("#"+key)
-        .attr("fill","rgb(70, 200, 70)")
-        d3.selectAll("#"+key+"join")
-        .attr("stroke","rgb(70, 200, 70)")
-        .attr("stroke-width", 2)
-        .attr("visibility", "visible")
-      })
-      .on("mouseout", function() {
-        d3.selectAll("#"+key)
-        .attr("fill","rgb(20, 150, 20)")
-        d3.selectAll("#"+key+"join")
-        .attr("visibility", "hidden")
-      })
-      d3.select("#ridersPan")
-      .append("text")
-      .text(key)
-      .attr("x", 6)
-      .attr("y", (15*index)+10)
-      .attr("font-family", "Helvetica")
-      .attr("font-size", "11px")
-      .attr("fill", "#101010")
-      .attr("text-anchor", "start")
-      .on("mouseover", function() {
-        d3.selectAll("#"+key)
-        .attr("fill","rgb(70, 200, 70)")
-        d3.selectAll("#"+key+"join")
-        .attr("stroke","rgb(70, 200, 70)")
-        .attr("stroke-width", 2)
-        .attr("visibility", "visible")
-      })
-      .on("mouseout", function() {
-        d3.selectAll("#"+key)
-        .attr("fill","rgb(20, 150, 20)")
-        d3.selectAll("#"+key+"join")
-        .attr("visibility", "hidden")
-      })
-    }
-  })
-
 })
-
 // fit a text to maximum number of char and carriage to another line if more
 function fitParagraph(nbChar, text) {
   return text.substring(0,nbChar)
 }
-
        </script>
     </body>
 </html>

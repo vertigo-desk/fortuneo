@@ -124,7 +124,7 @@ d3.csv("result_fortuneo_tdf.csv", function(dataset) {
     return i+1
   })
   .attr("x", function(d, i) {
-    return i * (w / dataset.length)
+    return (i * (w / dataset.length))+3
   })
   .attr("y", function(d,i) {
     return h+bottomSpace-(dataset[i].nbcoureurs*heightFactor)-bottomSpace-1;

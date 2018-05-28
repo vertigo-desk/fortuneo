@@ -8,10 +8,11 @@
     <body>
         <script type="text/javascript">
 // defintion du canvas
-var w=1000
-var h=600
+var w=737 
+var h=557
 var barSpace = 15
 var barWidth = 20
+var lineSize = 3
 var bottomSpace = 70
 var heightFactor = 3
 var leftPannel = 130
@@ -23,7 +24,7 @@ var svgContainer = d3.select("body")
 .attr("id", "backPan")
 .append("svg")
 .attr("width", w) 
-.attr("height", h+bottomSpace)
+.attr("height", h)
 .attr("x", leftPannel)
 .attr("id", "mainPan")
 // initialisation du dataset
@@ -52,7 +53,7 @@ d3.csv("result_fortuneo_tdf.csv", function(dataset) {
   // foreach coureur
   d3.keys(dataset[1]).forEach(function(key,index) {
     if (index >= 2) {
-     //bar par coureur
+      //bar par coureur
       elts.append("rect")
       .attr("id", key)
       .attr("visibility", function(d, i) {
@@ -61,20 +62,20 @@ d3.csv("result_fortuneo_tdf.csv", function(dataset) {
         else return "hidden"
       })
       .attr("x", function(d, i) {
-        return i * (w / dataset.length)
+        return i * (barWidth+barSpace)
       })
       .attr("y", function(d,i) {
         return h-((dataset[i].nbcoureurs-dataset[i][key]+1)*heightFactor)
       })
-      .attr("width", w / dataset.length -barSpace)
-      .attr("height", heightFactor)
+      .attr("width",barWidth)
+      .attr("height", lineSize)
       .attr("fill", "#7fabd1")
       .on("mouseover", function() {
         d3.selectAll("#"+key)
         .attr("fill","#337ab7")
         d3.selectAll("#"+key+"join")
         .attr("stroke","#337ab7")
-        .attr("stroke-width", 3)
+        .attr("stroke-width", lineSize)
         .attr("visibility", "visible")
       })
       .on("mouseout", function() {
@@ -83,9 +84,9 @@ d3.csv("result_fortuneo_tdf.csv", function(dataset) {
         d3.selectAll("#"+key+"join")
         .attr("visibility", "hidden")
       })
+
       // curve jonction
       var lineGenerator = d3.line().curve(d3.curveBasis);
- 
       elts.append("path")
       .attr("id", key+"join")
       .attr("d", function(d,i) {
@@ -100,18 +101,32 @@ d3.csv("result_fortuneo_tdf.csv", function(dataset) {
             nextPosition = dataset[nextRaceIndex].nbcoureurs-dataset[nextRaceIndex][key]
           }
           return lineGenerator([
-              [((i+1) * (w / dataset.length) - barSpace), (h-(position*heightFactor))-1],
-              [((i+1) * (w / dataset.length) - barSpace) + (barSpace/4), (h-(position*heightFactor))-1],
-              [((i+1) * (w / dataset.length)) - (barSpace/4), (h-(nextPosition*heightFactor))-1],
-              [((i+1) * (w / dataset.length)), (h-(nextPosition*heightFactor))-1]])
+              [((i+1) * (barSpace+barWidth) - barSpace), (h-(position*heightFactor))-1],
+              [((i+1) * (barSpace+barWidth) - barSpace) + (barSpace/4), (h-(position*heightFactor))-1],
+              [((i+1) * (barSpace+barWidth)) - (barSpace/4), (h-(nextPosition*heightFactor))-1],
+              [((i+1) * (barSpace+barWidth)), (h-(nextPosition*heightFactor))-1]])
         }
       })
       .attr("stroke", "rgb(80, 80, 80)")
       .attr("stroke-width", 1)
       .attr("fill", "none")
       .attr("visibility", "hidden")
+
+      // riders result
+      elts.append("text")
+      .attr("x", function(d, i) {
+        return ((i * (barWidth+barSpace))+(barWidth/2))
+      })
+      .attr("y", function(d, i) {
+        return h-((dataset[i].nbcoureurs-dataset[i][key]+1)*heightFactor)
+      })
+      .text(function(d, i) {
+        return dataset[i][key]
+      })
+
     }
   })
+
   // elts text
   var text = svgContainer.selectAll("text")
   .data(dataset)
@@ -124,7 +139,7 @@ d3.csv("result_fortuneo_tdf.csv", function(dataset) {
     return i+1
   })
   .attr("x", function(d, i) {
-    return (i * (w / dataset.length))+3
+    return (i * (barWidth+barSpace))+(barWidth/2)
   })
   .attr("y", function(d,i) {
     return h+bottomSpace-(dataset[i].nbcoureurs*heightFactor)-bottomSpace-1;
@@ -132,7 +147,7 @@ d3.csv("result_fortuneo_tdf.csv", function(dataset) {
   .attr("font-family", "Helvetica")
   .attr("font-size", "11px")
   .attr("fill", "#000000")
-  .attr("text-anchor", "start")
+  .attr("text-anchor", "middle")
 
   //rider list
   d3.keys(dataset[0]).forEach(function(key,index) {

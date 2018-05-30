@@ -70,20 +70,8 @@ d3.csv("result_fortuneo_tdf.csv", function(dataset) {
       .attr("width",barWidth)
       .attr("height", lineSize)
       .attr("fill", "#7fabd1")
-      .on("mouseover", function() {
-        d3.selectAll("#"+key)
-        .attr("fill","#337ab7")
-        d3.selectAll("#"+key+"join")
-        .attr("stroke","#337ab7")
-        .attr("stroke-width", lineSize)
-        .attr("visibility", "visible")
-      })
-      .on("mouseout", function() {
-        d3.selectAll("#"+key)
-        .attr("fill","#7fabd1")
-        d3.selectAll("#"+key+"join")
-        .attr("visibility", "hidden")
-      })
+      .on("mouseover", function(){tackMouseOver(key)})
+      .on("mouseout", function() {tackMouseOut(key)})
 
       // curve jonction
       var lineGenerator = d3.line().curve(d3.curveBasis);
@@ -107,28 +95,34 @@ d3.csv("result_fortuneo_tdf.csv", function(dataset) {
               [((i+1) * (barSpace+barWidth)), (h-(nextPosition*heightFactor))-1]])
         }
       })
-      .attr("stroke", "rgb(80, 80, 80)")
-      .attr("stroke-width", 1)
+      .attr("stroke-width", 3)
       .attr("fill", "none")
+      .attr("stroke","#337ab7")
       .attr("visibility", "hidden")
 
       // riders result
       elts.append("text")
+      .attr("id", key+"text")
       .attr("x", function(d, i) {
         return ((i * (barWidth+barSpace))+(barWidth/2))
       })
       .attr("y", function(d, i) {
-        return h-((dataset[i].nbcoureurs-dataset[i][key]+1)*heightFactor)
+        return h-((dataset[i].nbcoureurs-dataset[i][key]+1)*heightFactor) - 4
       })
       .text(function(d, i) {
         return dataset[i][key]
       })
-
+      .attr("font-family", "Helvetica")
+      .attr("font-size", "11px")
+      .attr("fill", "#000000")
+      .attr("text-anchor", "middle")
+      .attr("visibility", "hidden")
+      .style("cursor", "default");
     }
   })
 
   // elts text
-  var text = svgContainer.selectAll("text")
+  var text = svgContainer.selectAll("text.etape")
   .data(dataset)
   .enter()
 
@@ -160,20 +154,8 @@ d3.csv("result_fortuneo_tdf.csv", function(dataset) {
       .attr("width", leftPannel-20)
       .attr("height", 10)
       .attr("fill", "#7fabd1")
-      .on("mouseover", function() {
-        d3.selectAll("#"+key)
-        .attr("fill","#337ab7")
-        d3.selectAll("#"+key+"join")
-        .attr("stroke","#337ab7")
-        .attr("stroke-width", 3)
-        .attr("visibility", "visible")
-      })
-      .on("mouseout", function() {
-        d3.selectAll("#"+key)
-        .attr("fill","#7fabd1")
-        d3.selectAll("#"+key+"join")
-        .attr("visibility", "hidden")
-      })
+      .on("mouseover", function(){tackMouseOver(key)})
+      .on("mouseout", function() {tackMouseOut(key)})
       d3.select("#backPan")
       .append("text")
       .text(key)
@@ -183,23 +165,35 @@ d3.csv("result_fortuneo_tdf.csv", function(dataset) {
       .attr("font-size", "11px")
       .attr("fill", "#FFFFFF")
       .attr("text-anchor", "start")
-      .on("mouseover", function() {
-        d3.selectAll("#"+key)
-        .attr("fill","#337ab7")
-        d3.selectAll("#"+key+"join")
-        .attr("stroke","#337ab7")
-        .attr("stroke-width", 3)
-        .attr("visibility", "visible")
-      })
-      .on("mouseout", function() {
-        d3.selectAll("#"+key)
-        .attr("fill","#7fabd1")
-        d3.selectAll("#"+key+"join")
-        .attr("visibility", "hidden")
-      })
+      .on("mouseover", function(){tackMouseOver(key)})
+      .on("mouseout", function() {tackMouseOut(key)})
     }
   })
 })
+
+d3.selection.prototype.moveToFront = function() {
+  return this.each(function(){
+  this.parentNode.appendChild(this);
+  });
+};
+
+// focus on riders results mouseover
+function tackMouseOver(key) {
+  d3.selectAll("#"+key).attr("fill","#337ab7")
+  d3.selectAll("#"+key+"text").attr("visibility", "visible")
+  d3.selectAll("#"+key+"text").moveToFront()
+  d3.selectAll("#"+key+"join")
+  .attr("visibility", "visible")
+}
+
+// focus on riders results mouseout
+function tackMouseOut(key) {
+  d3.selectAll("#"+key).attr("fill","#7fabd1")
+  d3.selectAll("#"+key+"text").attr("visibility", "hidden")
+  d3.selectAll("#"+key+"join")
+  .attr("visibility", "hidden")
+}
+
 // fit a text to maximum number of char and carriage to another line if more
 function fitParagraph(nbChar, text) {
   return text.substring(0,nbChar)
